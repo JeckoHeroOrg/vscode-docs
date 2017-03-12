@@ -14,70 +14,112 @@ var File = require('vinyl');
 var common = require('./gulpfile.common');
 
 var RN_SRC_ROOT = 'release-notes'; 
-var DEST_ROOT = 'out/vscode-website/website'; 
+var DEST_ROOT = 'out/vscode-website/src'; 
+var RAW_ROOT = DEST_ROOT + '/views/raw';
 
 var releaseNotes = [];
+
+var sources = [
+		RN_SRC_ROOT + '/**/*.md'
+];
+
+var css = [
+		RN_SRC_ROOT + '/**/css/*.{css,CSS}'
+];
+
+function getStaticContent() {
+	var images = gulp.src([RN_SRC_ROOT + '/**/images/**/*.{png,PNG,jpg,JPG}']).pipe(imagemin());
+
+	var gifs = gulp.src([RN_SRC_ROOT + '/**/images/**/*.{gif,GIF}']);
+	
+	return [images, gifs];
+}
 
 gulp.task('copy-releasenotes-images', function () {
 	console.log('Copying over rest of release notes static content files...');
 
-	var images = gulp.src([RN_SRC_ROOT + '/**/images/**/*.{png,PNG,jpg,JPG}'])
-					 .pipe(imagemin());
+	return es.merge(getStaticContent())
+		.pipe(rename(function (path) { 
+			path.basename = path.dirname + '_' + path.basename; path.dirname = ''; 
+		}))
+		.pipe(gulp.dest(DEST_ROOT + '/dist'));
+});
 
-	var gifs = gulp.src([RN_SRC_ROOT + '/**/images/**/*.{gif,GIF}']);
+gulp.task('copy-releasenotes-raw-images', function () {
+	console.log('Copying over release note images for raw services...');
 
-	return es.merge([images, gifs])
-		.pipe(rename(function (path) { path.basename = path.dirname + '_' + path.basename; path.dirname = ''; }))
-		.pipe(gulp.dest(DEST_ROOT + '/Content'));
-;})
+	return es.merge(getStaticContent())
+		.pipe(gulp.dest(RAW_ROOT));
+});
 
-gulp.task('compile-releasenotes', ['compile-releasenotes-markdown', 'copy-releasenotes-images'], function () {
+gulp.task('compile-releasenotes', ['compile-releasenotes-handlebars', 'copy-releasenotes-raw-images', 'copy-releasenotes-images', 'compile-releasenotes-markdown', 'compile-releasenotes-css'], function () {
 	console.log('Creating release notes index...');
 	var tpl = common.swigCompiler('scripts/templates/releasenotes-nav-template.html');
 
 	releaseNotes = releaseNotes.sort(function (a, b) {
-		return parseFloat(a.Order) - parseFloat(b.Order);
+		return parseFloat(b.Order) - parseFloat(a.Order);
 	});
 
+    // Compile most recent releasenotes as latest.handlebars
+    var template = common.swigCompiler('scripts/templates/releasenotes-template.html');
+
+    var latest = new File({
+       path: 'latest.handlebars',
+       contents: new Buffer(template(releaseNotes[0]))
+    });
+    
+    es.readArray([latest])
+        .pipe(gulp.dest(DEST_ROOT + '/views/updates'));
+    
 	var file = new File({
-		path: '_UpdatesNav.cshtml',
+		path: 'updateNav.handlebars',
 		contents: new Buffer(tpl({ articles: releaseNotes }))
 	});
 
 	return es.readArray([file])
-		.pipe(gulp.dest(DEST_ROOT + '/Views/Shared'));
+		.pipe(gulp.dest(DEST_ROOT + '/views/partials'));
 });
 
-gulp.task('compile-releasenotes-markdown', function () {
-	var sources = [
-		RN_SRC_ROOT + '/**/*.md'
-	];
+function applyHtmlTemplate(file) {
+	var rn = common.mapFileToArticle(file);
 
+	// if (rn.Link.toLowerCase() == 'latest') {
+	// 	rn.Link = '';
+	// }
+	console.log("Compiling RN: " + rn.Title);
+	rn = common.compileMarkdown(file, rn);
+
+	if (rn.Order) {  // Only add articles that have the order metadata
+		releaseNotes.push(rn);
+	}
+
+	// Render template
+	var tpl = common.swigCompiler('scripts/templates/releasenotes-template.html');
+	var result = tpl(rn);
+
+	file.contents = new Buffer(result, 'utf8');
+
+	return file;
+}
+
+gulp.task('compile-releasenotes-handlebars', function () {
 	console.log('Parsing release notes MD, applying templates...');
 	return gulp.src(sources)
 		.pipe(frontMatter({ property: 'data', remove: true }))
-		.pipe(es.mapSync(function (file) {
-			var rn = common.mapFileToArticle(file);
+		.pipe(es.mapSync(applyHtmlTemplate))
+		.pipe(rename({ extname: '.handlebars' }))
+		.pipe(gulp.dest(DEST_ROOT + '/views/updates'));
+});
 
-			if (rn.Link.toLowerCase() == 'latest') {
-				rn.Link = '';
-			}
-			console.log("Compiling RN: " + rn.Title);
-			rn = common.compileMarkdown(file, rn);
+gulp.task('compile-releasenotes-markdown', function() {
+		console.log('Parsing markdown and moving to public folder...');
+		return gulp.src(sources)
+			.pipe(frontMatter({ property: 'data', remove: true }))
+			.pipe(gulp.dest(RAW_ROOT));
+});
 
-			if (rn.Order) {  // Only add articles that have the order metadata
-				releaseNotes.push(rn);
-			}
-
-			// Render template
-			var tpl = common.swigCompiler('scripts/templates/releasenotes-template.html');
-			var result = tpl(rn);
-
-			result = common.prependUTF8(result);
-			file.contents = new Buffer(result, 'utf8');
-
-			return file;
-		}))
-		.pipe(rename({ extname: '.cshtml' }))
-		.pipe(gulp.dest(DEST_ROOT + '/Views/Updates'));
+gulp.task('compile-releasenotes-css', function () {
+	console.log('Copying CSS styles for in-product release notes markdown...');
+	return gulp.src(css)
+		.pipe(gulp.dest(RAW_ROOT));
 });

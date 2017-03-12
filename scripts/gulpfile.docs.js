@@ -13,17 +13,27 @@ var File = require('vinyl');
 var common = require('./gulpfile.common');
 
 var DOCS_SRC_ROOT = 'docs'; 
-var DEST_ROOT = 'out/vscode-website/website'; 
+var DEST_ROOT = 'out/vscode-website/src'; 
+
+function Area(title, path, include, articles) {
+	this.title = title || '';
+	this.path = path || '';
+	this.include = include || false;
+	this.articles = articles || [];
+}
 
 var areas = {
-	editor: { title: 'Editor', path: 'editor', include: true, articles: [] },
-	customization: {title: 'Customization', path: 'customization', include: true, articles: []},
-	languages: { title: 'Languages', path: 'languages', include: true, articles: [] },
-	runtimes: { title: 'Runtimes', path: 'runtimes', include: true, articles: [] },
-	extensions: { title: 'Extensions', path: 'extensions', include: true, articles: [] },
-	extensionapi: { title: 'Extensibility Reference', path: 'extensionAPI', include: true, articles: [] },
-	tools: { title: 'Tools', path: 'tools', include: true, articles: [] },
-	supporting: { title: 'Supporting', path: 'supporting', include: false, articles: [] }
+	// Note that each attribute must be lower case
+	introvideos: new Area('Intro Videos', 'introvideos', true),
+	setup: new Area('Setup', 'setup', true),
+	editor: new Area('Editor', 'editor', true),
+	customization: new Area('Customization', 'customization', true),
+	languages: new Area('Languages', 'languages', true),
+	runtimes: new Area('Runtimes', 'runtimes', true),
+	extensions: new Area('Extension Authoring', 'extensions', true),
+	extensionapi: new Area('Extensibility Reference', 'extensionAPI', true),
+	tools: new Area('Tools', 'tools', true),
+	supporting: new Area('Supporting', 'supporting', false)
 };
 
 gulp.task('copy-images', function () {
@@ -37,7 +47,7 @@ gulp.task('copy-images', function () {
 	return es.merge([images, gifs])
 		.pipe(rename(function (path) { path.basename = path.dirname + '_' + path.basename; path.dirname = ''; }))
 		.pipe(rename({ dirname: '' }))
-		.pipe(gulp.dest(DEST_ROOT + '/Content/images'));
+		.pipe(gulp.dest(DEST_ROOT + '/dist/images'));
 ;})
 
 gulp.task('compile-docs', ['compile-docs-markdown', 'copy-images'], function () {
@@ -52,12 +62,12 @@ gulp.task('compile-docs', ['compile-docs-markdown', 'copy-images'], function () 
 	}
 
 	var file = new File({
-		path: '_DocsNav.cshtml',
+		path: 'docNav.handlebars',
 		contents: new Buffer(tpl({ areas: areas }))
 	});
 
 	return es.readArray([file])
-		.pipe(gulp.dest(DEST_ROOT + '/Views/Shared'));
+		.pipe(gulp.dest(DEST_ROOT + '/views/partials'));
 });
 
 gulp.task('compile-docs-markdown', function () {
@@ -90,11 +100,10 @@ gulp.task('compile-docs-markdown', function () {
 			var tpl = common.swigCompiler('scripts/templates/portaldocs-template.html');
 			var result = tpl(doc);
 
-			result = common.prependUTF8(result);
 			file.contents = new Buffer(result, 'utf8');
 
 			return file;
 		}))
-		.pipe(rename({ extname: '.cshtml' }))
-		.pipe(gulp.dest(DEST_ROOT + '/Views/Docs'));
+		.pipe(rename({ extname: '.handlebars' }))
+		.pipe(gulp.dest(DEST_ROOT + '/views/docs'));
 });

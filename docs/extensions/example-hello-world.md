@@ -2,8 +2,9 @@
 Order: 2
 Area: extensions
 TOCTitle: Example-Hello World
+ContentId: DC915D6C-13D4-4022-9101-57C4A4118B07
 PageTitle: Your First Visual Studio Code Extension - Hello World
-DateApproved: 12/18/2015
+DateApproved: 12/14/2016
 MetaDescription: Create your first Visual Studio extension (plug-in) with a simple Hello Word example.  This walkthrough will take you through the basics of VS Code extensibility.
 ---
 
@@ -16,6 +17,7 @@ This document will take you through creating your first VS Code extension ("Hell
 In this walkthrough, you'll add a new command to VS Code which will display a simple "Hello World" message.  Later in the walkthrough, you'll interact with the VS Code editor and query for the user's currently selected text.
 
 ## Prerequisites
+
 You need [node.js](https://nodejs.org/en/) installed and available in your `$PATH`.
 
 ## Generate a New Extension
@@ -44,6 +46,7 @@ For the hello world extension, you can either create a **TypeScript** extension 
 ![Running VS Code with an extension](images/example-hello-world/running.png)
 
 ## The Structure of an Extension
+
 After running, the generated extension should have the following structure:
 
 ```
@@ -56,10 +59,10 @@ After running, the generated extension should have the following structure:
 ├── .vscodeignore
 ├── README.md
 ├── src                         // sources
-│   └── extension.ts			// extension.js, in case of JavaScript extension
+│   └── extension.ts            // extension.js, in case of JavaScript extension
 ├── test                        // tests folder
-│   ├── extension.test.ts	   // extension.test.js, in case of JavaScript extension
-│   └── index.ts	            // index.js, in case of JavaScript extension
+│   ├── extension.test.ts       // extension.test.js, in case of JavaScript extension
+│   └── index.ts                // index.js, in case of JavaScript extension
 ├── node_modules
 │   ├── vscode                  // language services
 │   └── typescript              // compiler for typescript (TypeScript only)
@@ -118,8 +121,8 @@ Let's go through the purpose of all these files and explain what they do:
 		"compile": "node ./node_modules/vscode/bin/compile -watch -p ./"
 	},
 	"devDependencies": {
-		"typescript": "^1.6.2",
-		"vscode": "0.10.x"
+		"typescript": "^1.7.5",
+		"vscode": "^0.11.x"
 	}
 }
 ```
@@ -133,7 +136,7 @@ Let's go through the purpose of all these files and explain what they do:
 
 > **Note:** VS Code **does not** load the code of an extension eagerly at start-up. An extension must describe, through the [`activationEvents`](/docs/extensionAPI/activation-events.md) property under what conditions it should get activated (loaded).
 
-### Code
+### Generated Code
 
 The generated extension's code is in `extension.ts` (or `extension.js` in case of a JavaScript extension):
 
@@ -182,7 +185,7 @@ export function activate(context: vscode.ExtensionContext) {
 * `vsc-extension-quickstart.md` - A Quick Start guide for you.
 * `test/extension.test.ts` - you can put your extension unit tests in here and run your tests against the VS Code API (see [Testing Your Extension](/docs/extensions/testing-extensions.md))
 
-## Running your Extension
+## Extension Activation
 
 Now that the roles of the files included in the extension are clarified, here is how your extension gets activated:
 
@@ -204,7 +207,7 @@ Now that the roles of the files included in the extension are clarified, here is
 
 Simply set a breakpoint, for example inside the registered command and run the `"Hello world"` command in the Extension Development VS Code instance.
 
-![Debug Extension](images/example-hello-world/hitbp.png)
+![Debugging the extension](images/example-hello-world/hitbp.png)
 
 > **Note:** For TypeScript extensions, even though VS Code loads and executes `out/src/extension.js`, you are actually able to debug the original TypeScript code due to the generated source map `out/src/extension.js.map` and VS Code's debugger support for source maps.
 
@@ -251,12 +254,6 @@ In this walkthrough, we've seen a very simple extension. For a more detailed exa
 If you'd like to read more generally about the extension APIs, try these topics:
 
 * [Extension API Overview](/docs/extensionAPI/overview.md) - Learn about the full VS Code extensibility model.
-* [API Patterns and Principles](/docs/extensions/patterns-and-principles.md) - VS Code extensibility is based on several guiding patterns and principles.
+* [API Principles and Patterns](/docs/extensions/patterns-and-principles.md) - VS Code extensibility is based on several guiding principles and patterns.
 * [Contribution Points](/docs/extensionAPI/extension-points.md) - Details about the various VS Code contribution points.
 * [Activation Events](/docs/extensionAPI/activation-events.md) - VS Code activation events reference
-
-## Common Questions
-
-Nothing yet
-
-

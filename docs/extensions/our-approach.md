@@ -1,9 +1,10 @@
 ---
-Order: 11
+Order: 12
 Area: extensions
 TOCTitle: Our Approach
+ContentId: 2D912137-E7FE-4C5F-91D9-52088169C4AD
 PageTitle: Our Approach to Extensibility
-DateApproved: 12/18/2015
+DateApproved: 12/14/2016
 MetaDescription: Learn about the choices we made in creating the Visual Studio Code extension (plug-in) model.
 ---
 
@@ -35,25 +36,15 @@ As the `extension host` is a Node.js process, you can use the Node API in your e
 
 See the [package.json contribution points reference](/docs/extensionAPI/extension-points.md) for more details.
 
-## Extensibility API 
-The approach to run the extensions isolated in a separate process allows VS Code to strictly control the API exposed to extenders. Initially VS Code provides a small API surface. In the future, we will expand the API based on requests from extenders.  See the [Extensibility API Overview](/docs/extensionAPI/overview.md) for details on the current API.
+## Extensibility API
+The approach to run the extensions isolated in a separate process allows VS Code to strictly control the API exposed to extenders. See the [Extensibility API Overview](/docs/extensionAPI/overview.md) for details on the current API.
 
 VS Code is implemented using web technologies (HTML, CSS) and web technologies are very powerful when it comes to modifying and styling UI. You can easily add nodes to the DOM and implement a custom appearance using CSS. However, this power is not without its problems when it comes to evolving a complex application like VS Code. The structure can change and extensions that are tightly coupled to the UI would break. For this reason, VS Code took the defensive approach to not expose the DOM to extenders.
 
 ## Protocol based extensions
 A common extension pattern in VS Code is to execute extension code in a separate process that communicates with VS Code through a protocol. Examples of this in VS Code are the language servers and debug adapters.  Typically this protocol uses stdin/stdout to communicate between the processes using a JSON payload. Using separate processes provides good isolation boundaries which helps VS Code preserve the stability of the core editor. In addition, this allows extenders to pick the programming language that is most appropriate for the particular extension implementation.
 
-
 ## Next Steps
 * [Your First Extension](/docs/extensions/example-hello-world.md) - Try creating a simple Hello World extension
 * [Extension API](/docs/extensionAPI/overview.md) - Learn about the VS Code extensibility APIs
 * [Samples](/docs/tools/samples.md) - A list of extension samples you can review and build
-
-## Common Questions
-
-Nothing yet
-
-
-
-
-

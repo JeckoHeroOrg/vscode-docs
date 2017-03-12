@@ -13,11 +13,12 @@ var common = require('./scripts/gulpfile.common.js');
 require('./scripts/gulpfile.docs.js');
 require('./scripts/gulpfile.releasenotes.js');
 require('./scripts/gulpfile.api.js');
+require('./scripts/gulpfile.blog.js');
 
 var BRANCH = process.env["branch"] ? process.env["branch"] : "master"; 
 var URL = process.env["token"] ? 'https://' + process.env["token"] + '@github.com/microsoft/vscode-website': 'https://github.com/microsoft/vscode-website';
 
-gulp.task('compile-all', ['compile-docs', 'compile-releasenotes']);
+gulp.task('compile-all', ['compile-docs', 'compile-releasenotes', 'compile-blog']);
 
 gulp.task('clean-out-folder', common.rimraf('out'));
 
@@ -42,7 +43,7 @@ gulp.task('clone-vscode-website', ['clean-out-folder'], function(cb){
 
 gulp.task('commit', function(){
 	process.chdir('./out/vscode-website');
-	return gulp.src(['./website/*' ], {buffer:false})
+	return gulp.src(['./*' ], {buffer:false})
 				.pipe(git.add())
     			.pipe(git.commit('syncing with vscode-docs'))
 			   

@@ -1,9 +1,10 @@
 ---
-Order: 7
+Order: 6
 Area: extensions
 TOCTitle: Principles and Patterns
+ContentId: 36C1E34B-2F41-4AA0-9443-015D92EF85FB
 PageTitle: Visual Studio Code Extensibility Patterns and Principles
-DateApproved: 12/18/2015
+DateApproved: 12/14/2016
 MetaDescription: The Visual Studio Code extensibility (plug-in) API is designed around a set of guiding patterns and principles to promote extension consistency, correctness and ease of development.
 ---
 
@@ -13,9 +14,9 @@ The extension API of Visual Studio Code follows some guiding patterns and princi
 
 ## Promises
 
-The VS Code API represents asynchronous operations with [promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). From extensions __any__ type of promise can be returned, like ES6, WinJS, A+, etc. 
+The VS Code API represents asynchronous operations with [promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). From extensions, __any__ type of promise can be returned, like ES6, WinJS, A+, etc.
 
-Being independent of a specific promise library is expressed in the API by the `Thenable`-type.
+Being independent of a specific promise library is expressed in the API by the `Thenable`-type. `Thenable` represents the common denominator which is the `then`-property.
 
 In most cases the use of promises is optional and when VS Code calls into an extension, it can handle the _result type_ as well as a `Thenable` of the _result type_. When the use of a promise is optional, the API indicates this by returning `or`-types.
 
@@ -41,7 +42,7 @@ Events in the VS Code API are exposed as functions which you call with a listene
 
 ```javascript
 var listener = function(event) {
-	console.log(“It happened”, event);
+	console.log("It happened", event);
 };
 
 // start listening
@@ -74,8 +75,11 @@ Visual Studio Code **will not** install your extension's dependencies when a use
 
 **Q: Can I use native Node.js modules with my extension?**
 
-**A:** A Visual Studio Code extension package contains all of its dependencies. This means that if you develop your extension on Windows and depend on a native Node.js module when you publish that extension, the Windows compiled native dependency will be contained in your extension. Users on OS X or Linux won't be able to use the extension.
+**A:** A Visual Studio Code extension package contains all of its dependencies. This means that if you develop your extension on Windows and depend on a native Node.js module when you publish that extension, the Windows compiled native dependency will be contained in your extension. Users on Mac or Linux won't be able to use the extension.
 
-The only way to make this work for now is to include binaries for all four platforms of VS Code (Windows x86 and x64, Linux, OS X) in your extension and have code that dynamically loads the right one.
+The only way to make this work for now is to include binaries for all four platforms of VS Code (Windows x86 and x64, Linux, Mac) in your extension and have code that dynamically loads the right one.
+
+We don't recommend extensions use native `npm` modules as native modules bundled with an extension must be recompiled with every new version of VS Code against the same Node.js version that VS Code ships with. You can find the Node.js and module versions by running `process.versions` from the developer tools console (**Help** > **Toggle Developer Tools**).
+
 
 

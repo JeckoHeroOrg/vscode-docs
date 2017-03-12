@@ -1,23 +1,17 @@
 ---
-Order: 1
-TOCTitle: November
-PageTitle: Visual Studio Code November
-MetaDescription: See what is new in Visual Studio Code November v0.10.3
+Order: 6
+TOCTitle: November 2015
+PageTitle: Visual Studio Code November 2015 0.10.3 Beta
+MetaDescription: See what is new in Visual Studio Code November 0.10.3
 ---
 
-# v0.10.3 (November 2015)
-
-The 0.10.3 release includes a fix for a severe startup [performance regression](https://github.com/Microsoft/vscode/issues/335) introduced in v0.10.1.
-
-# v0.10.2 (November 2015)
-
-The 0.10.2 release includes some critical [fixes](http://github.com/Microsoft/vscode/issues?q=milestone%3A%22Nov+2015+-+end%22+is%3Aclosed) for the Beta release that have been reported by the community.
-
-# v0.10.1 (November - Beta 2015)
+# November 2015 (0.10.3 - Beta 2015)
 
 Hi,
 
 With this release, we mark our official Beta milestone and the big news is that VS Code now supports extensions (plug-ins) and is open source!
+
+Downloads: [Windows](https://az764295.vo.msecnd.net/public/0.10.3/VSCodeSetup.exe) | [OS X](https://az764295.vo.msecnd.net/public/0.10.3/VSCode-darwin.zip) | [Linux 32-bit](https://az764295.vo.msecnd.net/public/0.10.3/VSCode-linux32.zip) | [Linux 64-bit](https://az764295.vo.msecnd.net/public/0.10.3/VSCode-linux64.zip)
 
 ## VS Code Supports Extensions!
 
@@ -35,7 +29,7 @@ VS Code has two new `Extensions` commands (`kb(workbench.action.showCommands)` t
 
 ![extension commands](images/0_10_0/extension-commands.png)
 
-The VS Code also has a [Marketplace](https://marketplace.visualstudio.com/#VSCode) where you can browse and learn more about extensions.
+The VS Code also has a [Marketplace](https://marketplace.visualstudio.com/VSCode) where you can browse and learn more about extensions.
 
 ## Extensibility SDK
 
@@ -109,7 +103,7 @@ ColorSublime Batman Theme in 0.10.0:
 ![theme-0-10-0](images/0_10_0/theme-0-10-0.png)
 
 ## Environment Variable Substitution
-You can now reference environment variables directly in your `launch.json` and `task.json` files through `${env.Name}` (e.g. `${env.PATH}`).
+You can now reference environment variables directly in your `launch.json` and `tasks.json` files through `${env.Name}` (e.g. `${env.PATH}`).
 
 ## Language - PHP
 VS Code is now using the official PHP linter (`php -l`) for PHP language diagnostics. VS Code will now stay current with PHP linter improvements.
